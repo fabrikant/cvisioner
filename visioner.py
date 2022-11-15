@@ -8,6 +8,12 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         uic.loadUi('ui/MainWindow.ui', self)
 
+        self.buttonStartCapture = self.findChild(QPushButton, 'buttonStartCapture')
+        self.buttonStartCapture.clicked.connect(self.on_mouse_click)
+
+    def on_mouse_click(self):
+        print('mouse click')
+
 
 if __name__ == "__main__":
     print(sys.argv)
