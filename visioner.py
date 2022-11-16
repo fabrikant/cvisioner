@@ -4,14 +4,17 @@ from PyQt5 import uic, QtGui
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QPixmap
 from VideoProcessor import *
+from VideoFrame import *
 
 class MainWindow(QMainWindow):
+    sub_window = None
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('ui/MainWindow.ui', self)
         self.videoProcessor = VideoProcessor()
-        self.videoProcessor.img_redy_signal.connect(self.update_image)
-        self.videoFrame = self.findChild(QLabel, 'videoFrame')
+        # self.videoProcessor.img_redy_signal.connect(self.update_image)
+        self.mdiArea = self.findChild(QMdiArea, 'mdiArea')
+        # self.videoFrame = self.findChild(QLabel, 'videoFrame')
 
     def start_video_processor(self, video_source):
         if self.videoProcessor.is_started():
@@ -19,6 +22,12 @@ class MainWindow(QMainWindow):
         self.videoProcessor.sourceVideo = video_source
         self.videoProcessor._run_flag = True
         self.videoProcessor.start()
+        if self.sub_window == None:
+            self.sub_window = VideoFrame()
+            self.videoProcessor.img_redy_signal.connect(self.sub_window.update_image)
+            self.mdiArea.addSubWindow(self.sub_window)
+            self.sub_window.show()
+
 
     def start_capture(self):
         self.start_video_processor(-1)
@@ -31,20 +40,6 @@ class MainWindow(QMainWindow):
         if filename != '':
             self.start_video_processor(filename)
 
-    @pyqtSlot(np.ndarray)
-    def update_image(self, cv_img):
-        """Updates the image_label with a new opencv image"""
-        qt_img = self.convert_cv_qt(cv_img)
-        self.videoFrame.setPixmap(qt_img)
-
-    def convert_cv_qt(self, cv_img):
-        """Convert from an opencv image to QPixmap"""
-        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-        h, w, ch = rgb_image.shape
-        bytes_per_line = ch * w
-        convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.videoFrame.width(), self.videoFrame.height(), Qt.KeepAspectRatio)
-        return QPixmap.fromImage(p)
 
 
 if __name__ == "__main__":
