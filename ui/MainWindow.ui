@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>893</width>
-    <height>768</height>
+    <width>766</width>
+    <height>542</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,18 +30,28 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="buttonStartCapture">
+   <widget class="QSplitter" name="splitter">
     <property name="geometry">
      <rect>
       <x>650</x>
       <y>10</y>
-      <width>161</width>
-      <height>25</height>
+      <width>97</width>
+      <height>50</height>
      </rect>
     </property>
-    <property name="text">
-     <string>start capture</string>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
     </property>
+    <widget class="QPushButton" name="buttonStartCapture">
+     <property name="text">
+      <string>start capture</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="buttonStopCapture">
+     <property name="text">
+      <string>stop capture</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -49,12 +59,30 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>893</width>
+     <width>766</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionOpenFile"/>
+    <addaction name="actionOpenWebCamera"/>
+   </widget>
+   <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpenFile">
+   <property name="text">
+    <string> &amp;Open file</string>
+   </property>
+  </action>
+  <action name="actionOpenWebCamera">
+   <property name="text">
+    <string>Open &amp;web camera</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -74,8 +102,58 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>buttonStopCapture</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>stop_video_processor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>698</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>446</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpenFile</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>open_file()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>270</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpenWebCamera</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>start_capture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>270</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>start_capture()</slot>
+  <slot>stop_video_processor()</slot>
+  <slot>open_file()</slot>
  </slots>
 </ui>
