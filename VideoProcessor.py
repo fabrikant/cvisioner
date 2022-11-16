@@ -17,7 +17,9 @@ class VideoProcessor(QThread):
         while self._run_flag:
             ret, cv_img = cap.read()
             if ret:
-                self.img_redy_signal.emit(cv_img)
+                # signal_return = {'original': cv_img}
+                gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+                self.img_redy_signal.emit(gray)
         # shut down capture system
         cap.release()
 

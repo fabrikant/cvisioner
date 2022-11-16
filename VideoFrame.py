@@ -12,7 +12,6 @@ class VideoFrame(QMdiSubWindow):
         uic.loadUi('ui/VideoFrame.ui', self)
         self.videoFrame = self.findChild(QLabel, 'frame')
 
-
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         qt_img = self.convert_cv_qt(cv_img)

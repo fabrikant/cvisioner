@@ -14,6 +14,7 @@ class MainWindow(QMainWindow):
         self.videoProcessor = VideoProcessor()
         # self.videoProcessor.img_redy_signal.connect(self.update_image)
         self.mdiArea = self.findChild(QMdiArea, 'mdiArea')
+        app.aboutToQuit.connect(self.stop_video_processor)
         # self.videoFrame = self.findChild(QLabel, 'videoFrame')
 
     def start_video_processor(self, video_source):
@@ -36,7 +37,7 @@ class MainWindow(QMainWindow):
         self.videoProcessor.stop()
 
     def open_file(self):
-        filename = QFileDialog.getOpenFileName(self, caption='choose file')[0]
+        filename = QFileDialog.getOpenFileName(self, caption='Open file')[0]
         if filename != '':
             self.start_video_processor(filename)
 
