@@ -8,7 +8,6 @@ from VideoFrame import *
 
 
 class MainWindow(QMainWindow):
-    # sub_window = None
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -16,24 +15,36 @@ class MainWindow(QMainWindow):
         self.videoProcessor = VideoProcessor()
         self.videoProcessor.img_redy_signal.connect(self.next_frame_finished)
         self.mdiArea = self.findChild(QMdiArea, 'mdiArea')
+        self.frameList = self.findChild(QListWidget, 'frameList')
         app.aboutToQuit.connect(self.stop_video_processor)
-        # self.videoFrame = self.findChild(QLabel, 'videoFrame')
 
 
     def next_frame_finished(self):
         sub_windows = self.mdiArea.subWindowList()
         for id_frame, cv_img in self.videoProcessor.current_frames.items():
-            need_to_create = True
+            need_to_show = True
+            sub_window_is_find = False
+            find_items = self.frameList.findItems(id_frame, Qt.MatchExactly)
+            if len(find_items) == 0:
+                list_item = QListWidgetItem(id_frame)
+                list_item.setCheckState(Qt.CheckState.Checked)
+                self.frameList.addItem(list_item)
+            else:
+                if find_items[0].checkState() != 2:
+                    need_to_show = False
+
             for sub_window in sub_windows:
-                if (sub_window.id_frame == id_frame):
-                    need_to_create = False
-                    sub_window.update_image(cv_img)
+                if sub_window.id_frame == id_frame:
+                    sub_window_is_find = True
+                    if need_to_show:
+                        sub_window.update_image(cv_img)
+                    else:
+                        self.mdiArea.removeSubWindow(sub_window)
                     break
-            if (need_to_create):
-                self.sub_window = VideoFrame(id_frame)
-                # self.videoProcessor.img_redy_signal.connect(self.sub_window.update_image)
-                self.mdiArea.addSubWindow(self.sub_window)
-                self.sub_window.show()
+            if need_to_show and not sub_window_is_find:
+                sub_window = VideoFrame(id_frame)
+                self.mdiArea.addSubWindow(sub_window)
+                sub_window.show()
 
     def start_video_processor(self, video_source):
         if self.videoProcessor.is_started():
@@ -41,11 +52,6 @@ class MainWindow(QMainWindow):
         self.videoProcessor.sourceVideo = video_source
         self.videoProcessor._run_flag = True
         self.videoProcessor.start()
-        # if self.sub_window == None:
-        #     self.sub_window = VideoFrame()
-        #     self.videoProcessor.img_redy_signal.connect(self.sub_window.update_image)
-        #     self.mdiArea.addSubWindow(self.sub_window)
-        #     self.sub_window.show()
 
 
     def start_capture(self):
