@@ -6,6 +6,7 @@ from PyQt5.QtGui import QPixmap
 from VideoProcessor import *
 from VideoFrame import *
 
+app = None
 class MainWindow(QMainWindow):
     sub_window = None
     def __init__(self):
