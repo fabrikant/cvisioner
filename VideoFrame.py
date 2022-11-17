@@ -6,8 +6,11 @@ from VideoProcessor import *
 from PyQt5.QtCore import pyqtSlot, Qt
 
 class VideoFrame(QMdiSubWindow):
-    def __init__(self):
+    id_frame = None
+
+    def __init__(self, id_frame):
         super(VideoFrame, self).__init__()
+        self.id_frame = id_frame
         uic.loadUi('ui/VideoFrame.ui', self)
         self.videoFrame = self.findChild(QLabel, 'frame')
         self.manage_form()
@@ -15,14 +18,15 @@ class VideoFrame(QMdiSubWindow):
     def manage_form(self):
         geom = self.geometry()
         title_height = self.style().pixelMetric(QStyle.PM_TitleBarHeight)
-        self.videoFrame.setGeometry(2, title_height+2,geom.width()-4,geom.height()-title_height-4)
+        self.videoFrame.setGeometry(2, title_height+2, geom.width()-4, geom.height()-title_height-4)
+        self.setWindowTitle(str(self.id_frame))
 
 
     def resizeEvent(self, event):
         self.manage_form()
         return super(VideoFrame, self).resizeEvent(event)
 
-    @pyqtSlot(np.ndarray)
+    # @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         qt_img = self.convert_cv_qt(cv_img)
         self.videoFrame.setPixmap(qt_img)

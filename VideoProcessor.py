@@ -4,8 +4,9 @@ from PyQt5.QtCore import pyqtSignal, QThread
 
 
 class VideoProcessor(QThread):
-    img_redy_signal = pyqtSignal(np.ndarray)
+    img_redy_signal = pyqtSignal()
     sourceVideo = -1
+    current_frames = {}
 
     def __init__(self):
         super().__init__()
@@ -17,9 +18,13 @@ class VideoProcessor(QThread):
         while self._run_flag:
             ret, cv_img = cap.read()
             if ret:
-                # signal_return = {'original': cv_img}
+                self.current_frames['original'] = cv_img
+
                 gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
-                self.img_redy_signal.emit(gray)
+                self.current_frames['gray'] = gray
+
+                self.img_redy_signal.emit()
+
         # shut down capture system
         cap.release()
 
