@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
     def start_video_processor(self, video_source):
         if self.videoProcessor.is_started():
             self.videoProcessor.stop()
-        self.videoProcessor.sourceVideo = video_source
+        self.videoProcessor.media_source = video_source
         self.videoProcessor._run_flag = True
         self.videoProcessor.start()
         if self.sub_window == None:

@@ -6,9 +6,8 @@ from PyQt5.QtCore import pyqtSignal, QThread
 class VideoProcessor(QThread):
 
     img_redy_signal = pyqtSignal()
-    processor_stopped_signal = pyqtSignal()
 
-    sourceVideo = -1
+    media_source = -1
     current_frames = {}
 
     def __init__(self):
@@ -18,7 +17,7 @@ class VideoProcessor(QThread):
 
     def run(self):
         # capture from web cam
-        cap = cv2.VideoCapture(self.sourceVideo)
+        cap = cv2.VideoCapture(self.media_source)
         while self._run_flag:
             ret, cv_img = cap.read()
             if ret:
@@ -30,10 +29,7 @@ class VideoProcessor(QThread):
         # self.exit(0)
         self._run_flag = False
         self.current_frames = {}
-        self.processor_stopped_signal.emit()
-        # self.wait()
         self.exit(0)
-        self.processor_stopped_signal.emit()
 
     def is_started(self):
         return self._run_flag

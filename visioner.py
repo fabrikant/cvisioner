@@ -16,7 +16,6 @@ class MainWindow(QMainWindow):
         uic.loadUi('ui/MainWindow.ui', self)
         self.videoProcessor = VideoProcessor()
         self.videoProcessor.img_redy_signal.connect(self.next_frame_finished)
-        self.videoProcessor.processor_stopped_signal.connect(self.on_processor_stopped)
         app.aboutToQuit.connect(self.stop_video_processor)
         self.mdiArea = self.findChild(QMdiArea, 'mdiArea')
         self.frameList = self.findChild(QListWidget, 'frameList')
@@ -27,48 +26,38 @@ class MainWindow(QMainWindow):
             return
         sub_windows = self.mdiArea.subWindowList()
         for id_frame, cv_img in self.videoProcessor.current_frames.items():
-            need_to_show = True
-            sub_window_is_find = False
             find_items = self.frameList.findItems(id_frame, Qt.MatchExactly)
             if len(find_items) == 0:
                 list_item = QListWidgetItem(id_frame)
                 list_item.setCheckState(Qt.CheckState.Checked)
                 self.frameList.addItem(list_item)
-            else:
-                if find_items[0].checkState() != 2:
-                    need_to_show = False
-
-            for sub_window in sub_windows:
-                if sub_window.id_frame == id_frame:
-                    sub_window_is_find = True
-                    # print('isHide', sub_window.isHidden(), 'isVisible', sub_window.isVisible())
-                    if need_to_show:
+                find_items = self.frameList.findItems(id_frame, Qt.MatchExactly)
+            for list_item in find_items:
+                if list_item.checkState() == 2:
+                    sub_window_find = False
+                    for sub_window in sub_windows:
+                        if sub_window.id_frame == id_frame:
+                            sub_window_find = True
+                            sub_window.current_frame = cv_img.copy()
+                            sub_window.update_image()
+                    if not sub_window_find:
+                        sub_window = VideoFrame(id_frame)
+                        sub_window.subwindow_close_sigal.connect(self.on_subwindow_close)
+                        self.mdiArea.addSubWindow(sub_window)
+                        sub_window.show()
                         sub_window.current_frame = cv_img.copy()
                         sub_window.update_image()
-                        if sub_window.isHidden():
-                            sub_window.show()
-                    else:
-                        self.mdiArea.removeSubWindow(sub_window)
-                    break
-            if need_to_show and not sub_window_is_find:
-                sub_window = VideoFrame(id_frame)
-                sub_window.subwindow_close_sigal.connect(self.on_subwindow_close)
-                self.mdiArea.addSubWindow(sub_window)
-                sub_window.current_frame = cv_img.copy()
-                sub_window.show()
-
-    def start_video_processor(self, video_source):
-        self.stop_processing = False
-        if self.videoProcessor.is_started():
-            self.videoProcessor.stop()
-        self.videoProcessor.sourceVideo = video_source
-        self.videoProcessor._run_flag = True
-        self.videoProcessor.start()
 
 
-    def on_processor_stopped(self):
-        self.frameList.clear()
-        self.mdiArea.closeAllSubWindows()
+    def on_frame_list_changed(self, list_item):
+        id_frame = list_item.text()
+        sub_windows = self.mdiArea.subWindowList()
+        for sub_window in sub_windows:
+            if id_frame == sub_window.id_frame:
+                if list_item.checkState() == 0 and not sub_window.isHidden():
+                    sub_window.close()
+                elif list_item.checkState() == 2 and sub_window.isHidden():
+                    sub_window.show()
 
     def on_subwindow_close(self, id_frame):
         find_items = self.frameList.findItems(id_frame, Qt.MatchExactly)
@@ -78,6 +67,14 @@ class MainWindow(QMainWindow):
     def stop_video_processor(self):
         self.stop_processing = True
         self.videoProcessor.stop()
+
+    def start_video_processor(self, video_source):
+        self.stop_processing = False
+        if self.videoProcessor.is_started():
+            self.videoProcessor.stop()
+        self.videoProcessor.media_source = video_source
+        self.videoProcessor._run_flag = True
+        self.videoProcessor.start()
 
     def start_capture(self):
         self.start_video_processor(-1)

@@ -243,10 +243,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>frameList</sender>
+   <signal>itemChanged(QListWidgetItem*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_frame_list_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>715</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>426</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>start_capture()</slot>
   <slot>stop_video_processor()</slot>
   <slot>open_file()</slot>
+  <slot>on_frame_list_changed()</slot>
  </slots>
 </ui>
