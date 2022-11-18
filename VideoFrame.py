@@ -8,6 +8,7 @@ from PyQt5.QtCore import pyqtSlot, Qt
 class VideoFrame(QMdiSubWindow):
     id_frame = None
     current_frame = None
+    subwindow_close_sigal = pyqtSignal(str)
 
     def __init__(self, id_frame):
         super(VideoFrame, self).__init__()
@@ -23,10 +24,13 @@ class VideoFrame(QMdiSubWindow):
         self.setWindowTitle(str(self.id_frame))
         self.update_image()
 
-
     def resizeEvent(self, event):
         self.manage_form()
         return super(VideoFrame, self).resizeEvent(event)
+
+    def closeEvent(self, event):
+        self.subwindow_close_sigal.emit(self.id_frame)
+        return super(VideoFrame, self).closeEvent(event)
 
     def update_image(self):
         if not type(self.current_frame) == type(None):

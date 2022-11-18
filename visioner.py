@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
                     break
             if need_to_show and not sub_window_is_find:
                 sub_window = VideoFrame(id_frame)
+                sub_window.subwindow_close_sigal.connect(self.on_subwindow_close)
                 self.mdiArea.addSubWindow(sub_window)
                 sub_window.current_frame = cv_img.copy()
                 sub_window.show()
@@ -69,6 +70,10 @@ class MainWindow(QMainWindow):
         self.frameList.clear()
         self.mdiArea.closeAllSubWindows()
 
+    def on_subwindow_close(self, id_frame):
+        find_items = self.frameList.findItems(id_frame, Qt.MatchExactly)
+        for list_item in find_items:
+            list_item.setCheckState(0)
 
     def stop_video_processor(self):
         self.stop_processing = True
