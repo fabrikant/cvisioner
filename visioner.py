@@ -10,6 +10,7 @@ from VideoFrame import *
 class MainWindow(QMainWindow):
 
     stop_processing = False
+    media_source = None
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -19,6 +20,7 @@ class MainWindow(QMainWindow):
         app.aboutToQuit.connect(self.stop_video_processor)
         self.mdiArea = self.findChild(QMdiArea, 'mdiArea')
         self.frameList = self.findChild(QListWidget, 'frameList')
+        self.show_status()
 
 
     def next_frame_finished(self):
@@ -40,6 +42,8 @@ class MainWindow(QMainWindow):
                             sub_window_find = True
                             sub_window.current_frame = cv_img.copy()
                             sub_window.update_image()
+                            if sub_window.isHidden():
+                                sub_window.show()
                     if not sub_window_find:
                         sub_window = VideoFrame(id_frame)
                         sub_window.subwindow_close_sigal.connect(self.on_subwindow_close)
@@ -66,25 +70,43 @@ class MainWindow(QMainWindow):
 
     def stop_video_processor(self):
         self.stop_processing = True
+        self.videoProcessor._run_flag = False
         self.videoProcessor.stop()
 
-    def start_video_processor(self, video_source):
+    def start_video_processor(self):
+        if type(self.media_source) == type(None):
+            return
         self.stop_processing = False
         if self.videoProcessor.is_started():
             self.videoProcessor.stop()
-        self.videoProcessor.media_source = video_source
+        self.videoProcessor.media_source = self.media_source
         self.videoProcessor._run_flag = True
         self.videoProcessor.start()
+        self.show_status()
 
     def start_capture(self):
-        self.start_video_processor(-1)
+        self.media_source = -1
+        self.start_video_processor()
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, caption='Open file')[0]
         if filename != '':
-            self.start_video_processor(filename)
+            self.media_source = filename
+            self.start_video_processor()
 
+    def show_status(self):
+        status_bar = self.findChild(QStatusBar, 'statusbar')
+        status_string = 'source: '
+        if self.media_source == -1:
+            status_string += 'web camera'
+        else:
+            status_string += str(self.media_source)
+        status_bar.showMessage(status_string, 0)
 
+    def clear_form(self):
+        self.stop_video_processor()
+        self.frameList.clear()
+        self.mdiArea.closeAllSubWindows()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

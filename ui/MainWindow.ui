@@ -67,8 +67,33 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QListWidget" name="frameList"/>
+     </item>
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="pushButtonStart">
+         <property name="text">
+          <string>Start</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonStop">
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonClear">
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -259,11 +284,61 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonStop</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>stop_video_processor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>629</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>426</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonStart</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>start_video_processor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>715</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>426</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clear_form()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>802</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>426</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>start_capture()</slot>
   <slot>stop_video_processor()</slot>
   <slot>open_file()</slot>
   <slot>on_frame_list_changed()</slot>
+  <slot>start_video_processor()</slot>
+  <slot>clear_form()</slot>
  </slots>
 </ui>
