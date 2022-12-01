@@ -34,7 +34,7 @@ class VideoFrame(QMdiSubWindow):
         return super(VideoFrame, self).closeEvent(event)
 
     def update_image(self):
-        if not type(self.current_frame) == type(None) and self.isVisible():
+        if not (self.current_frame is None) and self.isVisible():
             qt_img = self.convert_cv_qt(self.current_frame)
             self.videoFrame.setPixmap(qt_img)
 

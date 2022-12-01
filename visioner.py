@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         self.videoProcessor.stop()
 
     def start_video_processor(self):
-        if type(self.media_source) == type(None):
+        if self.media_source is None:
             return
         self.stop_processing = False
         if self.videoProcessor.is_started():
